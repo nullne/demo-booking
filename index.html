@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Center align button</title>
+    <style>
+        button {
+            position: fixed;
+            /* or absolute */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 100px;
+        }
+
+        div {
+            position: fixed;
+            right: 5%;
+            top: 0;
+        }
+
+        p.error {
+            color: red;
+        }
+
+        p {
+            color: green;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body class="container">
+    <div id="alert"></div>
+    <button type="button" onclick="book()">Book Now!</button>
+
+</body>
+<script>
+    function prepend(text, error=false) {
+        let p = document.createElement("p")
+        p.innerText = text
+        if (error) {
+            p.className = "error"
+        }
+        document.getElementById("alert").prepend(p);
+    }
+    function book() {
+        fetch("/booking")
+            .then(async r => prepend(await r.text()))
+            .catch(e => prepend(e, true));
+    }
+</script>
+
+</html>
