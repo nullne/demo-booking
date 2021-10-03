@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	_ "embed"
 	"flag"
 	"fmt"
@@ -25,14 +26,22 @@ func booking(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			return err
 		}
-		file.Close()
+		err = file.Close()
+		if err != nil {
+			return err
+		}
 		file, err = os.OpenFile(file.Name(), os.O_RDWR|os.O_SYNC, 0600)
 		if err != nil {
 			return err
 		}
 		defer file.Close()
-		_, err = file.WriteString("this is fake booking content\n")
+		b := make([]byte, 1111)
+		rand.Read(b)
+		_, err = file.Write(b)
 		if err != nil {
+			return err
+		}
+		if err := file.Sync(); err != nil {
 			return err
 		}
 		return nil
@@ -45,6 +54,8 @@ func booking(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "[%s] booking succeeded\n", time.Now().Format(time.StampMilli))
 }
 
+// func save(file string) error
+
 func main() {
 	flag.Parse()
 
@@ -55,9 +66,9 @@ func main() {
 	})
 
 	srv := &http.Server{
-		Addr:         *fAddr,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
+		Addr: *fAddr,
+		// ReadTimeout:  5 * time.Second,
+		// WriteTimeout: 5 * time.Second,
 	}
 	log.Println(srv.ListenAndServe())
 }
