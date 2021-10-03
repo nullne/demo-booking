@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -26,14 +25,14 @@ func booking(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			return err
 		}
-		err = file.Close()
-		if err != nil {
-			return err
-		}
-		file, err = os.OpenFile(file.Name(), os.O_RDWR|os.O_SYNC, 0600)
-		if err != nil {
-			return err
-		}
+		// err = file.Close()
+		// if err != nil {
+		// 	return err
+		// }
+		// file, err = os.OpenFile(file.Name(), os.O_RDWR|os.O_SYNC, 0600)
+		// if err != nil {
+		// 	return err
+		// }
 		defer file.Close()
 		b := make([]byte, 1111)
 		rand.Read(b)
