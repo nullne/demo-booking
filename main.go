@@ -5,7 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -20,6 +22,11 @@ var html string
 func booking(w http.ResponseWriter, req *http.Request) {
 	err := func() error {
 		file, err := ioutil.TempFile(*fWorkDir, "*.bk")
+		if err != nil {
+			return err
+		}
+		file.Close()
+		file, err = os.OpenFile(file.Name(), os.O_RDWR|os.O_SYNC, 0600)
 		if err != nil {
 			return err
 		}
@@ -47,5 +54,10 @@ func main() {
 		fmt.Fprintf(w, "%s", html)
 	})
 
-	http.ListenAndServe(*fAddr, nil)
+	srv := &http.Server{
+		Addr:         *fAddr,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+	}
+	log.Println(srv.ListenAndServe())
 }
